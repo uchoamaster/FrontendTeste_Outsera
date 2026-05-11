@@ -84,3 +84,9 @@ src/
 - Layout responsivo para desktop e telas menores.
 - Codigo organizado por responsabilidade (layout, paginas, integracao de API e testes).
 - Documentacao de instalacao, execucao e testes.
+
+## Imagens do sistema
+
+<img width="1908" height="996" alt="image" src="https://github.com/user-attachments/assets/617aad84-2c17-49ac-b966-0e0848250c90" />
+<img width="1901" height="963" alt="image" src="https://github.com/user-attachments/assets/b02d3b8c-7745-4f98-b31e-0493717dfb06" />
+
