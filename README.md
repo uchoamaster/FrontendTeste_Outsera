@@ -78,6 +78,26 @@ src/
 	test/
 		setup.js
 ```
+## Estrutura modificada e atual
+
+```text
+src/
+  hooks/
+    useMovies.js          ← todo estado, filtros, debounce e chamada de API da listagem
+    useDashboard.js       ← todo estado e chamadas paralelas de API do dashboard
+  components/
+    Pagination.jsx        ← paginação reutilizável
+    movies/
+      MovieTable.jsx      ← tabela com filtros de ano e winner
+    dashboard/
+      MultipleWinnersPanel.jsx   ← painel "years with multiple winners"
+      TopStudiosPanel.jsx        ← painel "top 3 studios"
+      ProducerIntervalsPanel.jsx ← painel max/min intervals
+      WinnersByYearPanel.jsx     ← painel busca por ano
+  pages/
+    MovieListPage.jsx     ← orquestrador: ~20 linhas
+    DashboardPage.jsx     ← orquestrador: ~25 linhas
+```
 
 ## Requisitos nao funcionais
 
