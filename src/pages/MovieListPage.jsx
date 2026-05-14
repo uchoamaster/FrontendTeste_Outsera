@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getMovies } from '../api/moviesApi'
 
 const PAGE_SIZE = 15
@@ -7,8 +7,10 @@ function MovieListPage() {
   const [movies, setMovies] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(0)
+  const [yearInput, setYearInput] = useState('')
   const [yearFilter, setYearFilter] = useState('')
   const [winnerFilter, setWinnerFilter] = useState('all')
+  const debounceRef = useRef(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -36,8 +38,13 @@ function MovieListPage() {
   }, [page, winnerFilter, yearFilter])
 
   function handleYearChange(event) {
-    setYearFilter(event.target.value)
-    setPage(0)
+    const value = event.target.value
+    setYearInput(value)
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setYearFilter(value)
+      setPage(0)
+    }, 500)
   }
 
   function handleWinnerChange(event) {
@@ -62,7 +69,7 @@ function MovieListPage() {
                 <input
                   type="number"
                   placeholder="Filter by year"
-                  value={yearFilter}
+                  value={yearInput}
                   onChange={handleYearChange}
                 />
               </th>
