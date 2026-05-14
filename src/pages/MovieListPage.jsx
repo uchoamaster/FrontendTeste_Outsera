@@ -1,58 +1,19 @@
-import { useEffect, useState, useRef } from 'react'
-import { getMovies } from '../api/moviesApi'
-
-const PAGE_SIZE = 15
+import { useMovies } from '../hooks/useMovies'
+import MovieTable from '../components/movies/MovieTable'
+import Pagination from '../components/Pagination'
 
 function MovieListPage() {
-  const [movies, setMovies] = useState([])
-  const [totalPages, setTotalPages] = useState(0)
-  const [page, setPage] = useState(0)
-  const [yearInput, setYearInput] = useState('')
-  const [yearFilter, setYearFilter] = useState('')
-  const [winnerFilter, setWinnerFilter] = useState('all')
-  const debounceRef = useRef(null)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    async function loadMovies() {
-      try {
-        const winnerValue =
-          winnerFilter === 'all' ? undefined : winnerFilter === 'yes'
-
-        const data = await getMovies({
-          page,
-          size: PAGE_SIZE,
-          year: yearFilter.trim() ? Number(yearFilter) : undefined,
-          winner: winnerValue,
-        })
-
-        setMovies(data.content ?? [])
-        setTotalPages(data.totalPages ?? 0)
-        setError('')
-      } catch (requestError) {
-        setError(requestError.message)
-      }
-    }
-
-    loadMovies()
-  }, [page, winnerFilter, yearFilter])
-
-  function handleYearChange(event) {
-    const value = event.target.value
-    setYearInput(value)
-    clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      setYearFilter(value)
-      setPage(0)
-    }, 500)
-  }
-
-  function handleWinnerChange(event) {
-    setWinnerFilter(event.target.value)
-    setPage(0)
-  }
-
-  const visiblePages = Array.from({ length: totalPages }, (_, index) => index)
+  const {
+    movies,
+    totalPages,
+    page,
+    yearInput,
+    winnerFilter,
+    error,
+    setPage,
+    handleYearChange,
+    handleWinnerChange,
+  } = useMovies()
 
   return (
     <section>
@@ -60,89 +21,14 @@ function MovieListPage() {
       {error && <p className="error-message">Error: {error}</p>}
 
       <div className="panel-card full-width-panel">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>
-                Year
-                <input
-                  type="number"
-                  placeholder="Filter by year"
-                  value={yearInput}
-                  onChange={handleYearChange}
-                />
-              </th>
-              <th>Title</th>
-              <th>
-                Winner?
-                <select value={winnerFilter} onChange={handleWinnerChange}>
-                  <option value="all">Yes/No</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {movies.map((movie) => (
-              <tr key={movie.id}>
-                <td>{movie.id}</td>
-                <td>{movie.year}</td>
-                <td>{movie.title}</td>
-                <td>{movie.winner ? 'Yes' : 'No'}</td>
-              </tr>
-            ))}
-            {!movies.length && (
-              <tr>
-                <td colSpan={4} className="empty-state-cell">
-                  No movies found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        <div className="pagination" aria-label="Movie list pagination">
-          <button type="button" onClick={() => setPage(0)} disabled={page === 0}>
-            {'<<'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setPage((current) => Math.max(0, current - 1))}
-            disabled={page === 0}
-          >
-            {'<'}
-          </button>
-
-          {visiblePages.map((pageNumber) => (
-            <button
-              key={pageNumber}
-              type="button"
-              className={pageNumber === page ? 'active-page' : ''}
-              onClick={() => setPage(pageNumber)}
-            >
-              {pageNumber + 1}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            onClick={() =>
-              setPage((current) => Math.min(Math.max(totalPages - 1, 0), current + 1))
-            }
-            disabled={page >= totalPages - 1 || totalPages === 0}
-          >
-            {'>'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setPage(Math.max(totalPages - 1, 0))}
-            disabled={page >= totalPages - 1 || totalPages === 0}
-          >
-            {'>>'}
-          </button>
-        </div>
+        <MovieTable
+          movies={movies}
+          yearInput={yearInput}
+          winnerFilter={winnerFilter}
+          onYearChange={handleYearChange}
+          onWinnerChange={handleWinnerChange}
+        />
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </section>
   )
