@@ -45,9 +45,7 @@ function MovieListPage() {
     setPage(0)
   }
 
-  const visiblePages = Array.from({ length: Math.min(totalPages, 5) }, (_, index) =>
-    index,
-  )
+  const visiblePages = Array.from({ length: totalPages }, (_, index) => index)
 
   return (
     <section>
